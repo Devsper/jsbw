@@ -2,25 +2,27 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const Schema = mongoose.Schema;
 
+// Mongoose schema for users 
+// Creates a structure for a mongo-collection 
 var UserSchema = new mongoose.Schema({
   email: {
     type: String,
     unique: true,
     required: true,
-    trim: true
+    trim: true // Trims whitespaces
   },
   username: {
     type: String,
     unique: true,
     required: true,
-    trim: true
+    trim: true // Trims whitespaces
   },
   password: {
-    type: String,
+    type: String, // Hashed password
     required: true,
   },
   passwordConf: {
-    type: String,
+    type: String, // Password in clear text, only for development
     required: true,
   }
 });
@@ -40,9 +42,10 @@ UserSchema.pre('save', function (next) {
     })
   });
 
-
+  // Authenticates user at login
   UserSchema.statics.authenticate = function(email, password, callback){
 
+    // Searches for email
     User.findOne({ email: email})
       .exec(function (error, user){
         if(error){
@@ -52,9 +55,11 @@ UserSchema.pre('save', function (next) {
           err.status = 401;
           return callback(err);
         }
-  
+        
+        // Compares password with stored hashed password
         bcrypt.compare(password, user.password, function(error, result){
           if(result == true){
+            // Return user if OK
             return callback(null, user);
           }else{
             return callback();
@@ -63,29 +68,19 @@ UserSchema.pre('save', function (next) {
       }); 
   }
 
+// Exports user model
 var User = module.exports = mongoose.model('User', UserSchema, 'users');
-
 module.exports = User;
 
+// Adds user to database
 module.exports.addUser = function(newUser, callback){
 
     newUser.save(callback); 
 }
 
+// Fetches user from database
 module.exports.getUser = function(id, callback){
     
   let query = {_id: id};
   User.find(query, callback);
-}
-
-module.exports.comparePassword = function(candidatePw, hash, callback){
-  
-  bcrypt.compare(password, hash, function (err, result) {
-
-    if(result === true) {
-      return callback(null, user);
-    } else {
-      return callback();
-    }
-  })
 }
