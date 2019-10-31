@@ -17,7 +17,7 @@
     "express": "^4.16.3",
     "express-messages": "^1.0.1",
     "express-session": "^1.15.6",
-    "mongoose": "^5.0.14"
+    "mongoose": "^5.7.5"
   },
   "devDependencies": {
     "@angular/cli": "^1.7.4"
